@@ -30,7 +30,7 @@ public class Village {
 
 	int trouverEtalLibre() {
 	    int EtalLibre = -1;
-	    for (int i = 0; (i < nbetal) && (EtalLibre == -1); i++) {
+	    for (int i = 0; i < nbetal && EtalLibre == -1; i++) {
 		if (!etals[i].isEtalOccupe()) {
 		    EtalLibre = i;
 		}
@@ -42,14 +42,14 @@ public class Village {
 	    Etal[] etalProduit;
 	    int nbEtalPro = 0;
 	    for (int i = 0; i < nbetal; i++) {
-		if (etals[i].contientProduit(produit)) {
+		if (etals[i].isEtalOccupe() && etals[i].contientProduit(produit)) {
 		    nbEtalPro++;
 		}
 	    }
 
 	    etalProduit = new Etal[nbEtalPro];
 	    for (int i = 0; i < nbEtalPro; i++) {
-		if (etals[i].contientProduit(produit)) {
+		if (etals[i].isEtalOccupe() && etals[i].contientProduit(produit)) {
 		    etalProduit[i] = etals[i];
 		}
 	    }
@@ -69,10 +69,13 @@ public class Village {
 	}
 
 	String afficherMarche() {
-	    int nbOccupe = trouverEtalLibre();
-	    int nbEtalVide = nbetal - nbOccupe;
-	    for (int i = 0; i < nbOccupe; i++) {
-		etals[i].afficherEtal();
+	    int nbEtalVide = 0;
+	    for (int i = 0; i < nbetal; i++) {
+		if (etals[i].isEtalOccupe()) {
+		    etals[i].afficherEtal();
+		} else {
+		    nbEtalVide++;
+		}
 	    }
 	    if (nbEtalVide != 0) {
 		return "Il reste " + nbEtalVide + " étals non utilisés dans le marché.\n";
