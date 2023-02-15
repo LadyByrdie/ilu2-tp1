@@ -4,56 +4,121 @@ import personnages.Chef;
 import personnages.Gaulois;
 
 public class Village {
-	private String nom;
-	private Chef chef;
-	private Gaulois[] villageois;
-	private int nbVillageois = 0;
+    private String nom;
+    private Chef chef;
+    private Gaulois[] villageois;
+    private int nbVillageois = 0;
 
-	public Village(String nom, int nbVillageoisMaximum) {
-		this.nom = nom;
-		villageois = new Gaulois[nbVillageoisMaximum];
+    public Village(String nom, int nbVillageoisMaximum) {
+	this.nom = nom;
+	villageois = new Gaulois[nbVillageoisMaximum];
+    }
+
+    private class Marche {
+	private Etal[] etals;
+	private int nbetal;
+
+	public Marche(int nbetal) {
+	    super();
+	    this.nbetal = nbetal;
+	    this.etals = new Etal[nbetal];
 	}
 
-	public String getNom() {
-		return nom;
+	void utiliserEtal(int indiceEtal, Gaulois vendeur, String produit, int nbProduit) {
+	    etals[indiceEtal].occuperEtal(vendeur, produit, nbProduit);
 	}
 
-	public void setChef(Chef chef) {
-		this.chef = chef;
-	}
-
-	public void ajouterHabitant(Gaulois gaulois) {
-		if (nbVillageois < villageois.length) {
-			villageois[nbVillageois] = gaulois;
-			nbVillageois++;
+	int trouverEtalLibre() {
+	    int EtalLibre = -1;
+	    for (int i = 0; (i < nbetal) && (EtalLibre == -1); i++) {
+		if (!etals[i].isEtalOccupe()) {
+		    EtalLibre = i;
 		}
+	    }
+	    return EtalLibre;
 	}
 
-	public Gaulois trouverHabitant(String nomGaulois) {
-		if (nomGaulois.equals(chef.getNom())) {
-			return chef;
+	Etal[] trouverEtals(String produit) {
+	    Etal[] etalProduit;
+	    int nbEtalPro = 0;
+	    for (int i = 0; i < nbetal; i++) {
+		if (etals[i].contientProduit(produit)) {
+		    nbEtalPro++;
 		}
-		for (int i = 0; i < nbVillageois; i++) {
-			Gaulois gaulois = villageois[i];
-			if (gaulois.getNom().equals(nomGaulois)) {
-				return gaulois;
-			}
+	    }
+
+	    etalProduit = new Etal[nbEtalPro];
+	    for (int i = 0; i < nbEtalPro; i++) {
+		if (etals[i].contientProduit(produit)) {
+		    etalProduit[i] = etals[i];
 		}
-		return null;
+	    }
+
+	    return etalProduit;
+
 	}
 
-	public String afficherVillageois() {
-		StringBuilder chaine = new StringBuilder();
-		if (nbVillageois < 1) {
-			chaine.append("Il n'y a encore aucun habitant au village du chef "
-					+ chef.getNom() + ".\n");
-		} else {
-			chaine.append("Au village du chef " + chef.getNom()
-					+ " vivent les lÃ©gendaires gaulois :\n");
-			for (int i = 0; i < nbVillageois; i++) {
-				chaine.append("- " + villageois[i].getNom() + "\n");
-			}
+	Etal trouverVendeur(Gaulois gaulois) {
+	    Etal etalVendeur = null;
+	    for (int i = 0; (i < nbetal) && (etalVendeur == null); i++) {
+		if ((gaulois == etals[i].getVendeur())) {
+		    etalVendeur = etals[i];
 		}
-		return chaine.toString();
+	    }
+	    return etalVendeur;
 	}
+
+	String afficherMarche() {
+	    int nbOccupe = trouverEtalLibre();
+	    int nbEtalVide = nbetal - nbOccupe;
+	    for (int i = 0; i < nbOccupe; i++) {
+		etals[i].afficherEtal();
+	    }
+	    if (nbEtalVide != 0) {
+		return "Il reste " + nbEtalVide + " étals non utilisés dans le marché.\n";
+	    }
+	    return "";
+	}
+    }
+
+    public String getNom() {
+	return nom;
+    }
+
+    public void setChef(Chef chef) {
+	this.chef = chef;
+    }
+
+    public void ajouterHabitant(Gaulois gaulois) {
+	if (nbVillageois < villageois.length) {
+	    villageois[nbVillageois] = gaulois;
+	    nbVillageois++;
+	}
+    }
+
+    public Gaulois trouverHabitant(String nomGaulois) {
+	if (nomGaulois.equals(chef.getNom())) {
+	    return chef;
+	}
+	for (int i = 0; i < nbVillageois; i++) {
+	    Gaulois gaulois = villageois[i];
+	    if (gaulois.getNom().equals(nomGaulois)) {
+		return gaulois;
+	    }
+	}
+	return null;
+    }
+
+    public String afficherVillageois() {
+	StringBuilder chaine = new StringBuilder();
+	if (nbVillageois < 1) {
+	    chaine.append("Il n'y a encore aucun habitant au village du chef " + chef.getNom() + ".\n");
+	} else {
+	    chaine.append("Au village du chef " + chef.getNom() + " vivent les lÃ©gendaires gaulois :\n");
+	    for (int i = 0; i < nbVillageois; i++) {
+		chaine.append("- " + villageois[i].getNom() + "\n");
+	    }
+	}
+	return chaine.toString();
+    }
 }
