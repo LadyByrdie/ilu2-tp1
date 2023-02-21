@@ -2,7 +2,7 @@ package villagegaulois;
 
 import personnages.Gaulois;
 
-public class Etal {
+public class Etal{
 	private Gaulois vendeur;
 	private String produit;
 	private int quantiteDebutMarche;
@@ -25,18 +25,27 @@ public class Etal {
 		etalOccupe = true;
 	}
 
-	public String libererEtal() {
-		etalOccupe = false;
-		StringBuilder chaine = new StringBuilder(
-				"Le vendeur " + vendeur.getNom() + " quitte son étal, ");
-		int produitVendu = quantiteDebutMarche - quantite;
-		if (produitVendu > 0) {
-			chaine.append(
-					"il a vendu " + produitVendu + " parmi " + produit + ".\n");
-		} else {
-			chaine.append("il n'a malheureusement rien vendu.\n");
-		}
-		return chaine.toString();
+	
+	public String libererEtal() throws IllegalStateException{
+		try {
+			if (!etalOccupe) {
+				throw new IllegalStateException("L'étal n'est pas occupé, elle est donc déjà libre!");
+			}
+				etalOccupe = false;
+				StringBuilder chaine = new StringBuilder(
+						"Le vendeur " + vendeur.getNom() + " quitte son étal, ");
+				int produitVendu = quantiteDebutMarche - quantite;
+				if (produitVendu > 0) {
+					chaine.append(
+							"il a vendu " + produitVendu + " parmi " + produit + ".\n");
+				} else {
+					chaine.append("il n'a malheureusement rien vendu.\n");
+				}
+				return chaine.toString();
+	}catch(IllegalStateException e){
+		System.out.println("Etal déjà libre");
+	}
+		return"";
 	}
 
 	public String afficherEtal() {
@@ -47,11 +56,27 @@ public class Etal {
 		return "L'étal est libre";
 	}
 
-	public String acheterProduit(int quantiteAcheter, Gaulois acheteur) {
-		if (etalOccupe) {
+	public String acheterProduit(int quantiteAcheter, Gaulois acheteur) throws IllegalStateException, IllegalArgumentException {
+			 if(quantiteAcheter<0) {
+				 throw new IllegalArgumentException("La quantité a acheter doit être positif!");
+			 }
+			 
+			 if(!isEtalOccupe()) {
+				 throw new IllegalStateException("L'étal est innocupé");
+			 }
+			 
+			 if(acheteur==null){
+				 throw new IllegalArgumentException("L'acheteur n'existe pas ");
+			 }
+			 
+			 
+			try {
 			StringBuilder chaine = new StringBuilder();
+			
+			
 			chaine.append(acheteur.getNom() + " veut acheter " + quantiteAcheter
 					+ " " + produit + " à " + vendeur.getNom());
+			
 			if (quantite == 0) {
 				chaine.append(", malheureusement il n'y en a plus !");
 				quantiteAcheter = 0;
@@ -63,19 +88,32 @@ public class Etal {
 				quantiteAcheter = quantite;
 				quantite = 0;
 			}
+			
+			
+			try {
 			if (quantite != 0) {
 				quantite -= quantiteAcheter;
 				chaine.append(". " + acheteur.getNom()
 						+ ", est ravi de tout trouver sur l'étal de "
 						+ vendeur.getNom() + "\n");
+				return chaine.toString();
 			}
-			return chaine.toString();
+			
+			}catch(IllegalArgumentException e){
+				System.out.println("Acheter quelque chose qui n'existe pas, malheureusement c'est pas très possible...");
+			}
+			
+			}catch(IllegalArgumentException e) {
+				System.out.println("L'acheteur n'est pas dispoible");
+			}
+			
+			return null;
 		}
-		return null;
-	}
+	
 
 	public boolean contientProduit(String produit) {
 		return this.produit.equals(produit);
 	}
 
 }
+

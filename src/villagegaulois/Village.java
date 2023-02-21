@@ -1,5 +1,6 @@
 package villagegaulois;
 
+import ExceptionsPersonnalises.VillageSansChefException;
 import personnages.Chef;
 import personnages.Gaulois;
 
@@ -8,7 +9,6 @@ public class Village {
     private Chef chef;
     private Gaulois[] villageois;
     private int nbVillageois = 0;
-
     public Village(String nom, int nbVillageoisMaximum) {
 	this.nom = nom;
 	villageois = new Gaulois[nbVillageoisMaximum];
@@ -78,7 +78,7 @@ public class Village {
 		}
 	    }
 	    if (nbEtalVide != 0) {
-		return "Il reste " + nbEtalVide + " étals non utilisés dans le marché.\n";
+		return "Il reste " + nbEtalVide + " ï¿½tals non utilisï¿½s dans le marchï¿½.\n";
 	    }
 	    return "\n";
 	}
@@ -112,8 +112,12 @@ public class Village {
 	return null;
     }
 
-    public String afficherVillageois() {
+    public String afficherVillageois() throws VillageSansChefException{
 	StringBuilder chaine = new StringBuilder();
+	if(this.chef==null) {
+    	throw new VillageSansChefException("le village rÃ©clame un chef");
+    }
+	try {
 	if (nbVillageois < 1) {
 	    chaine.append("Il n'y a encore aucun habitant au village du chef " + chef.getNom() + ".\n");
 	} else {
@@ -123,5 +127,9 @@ public class Village {
 	    }
 	}
 	return chaine.toString();
+	}catch(VillageSansChefException e) {
+		System.out.println("Veuillez s'il vous plait inserer un chef");
+	}
+	return null;
     }
 }
